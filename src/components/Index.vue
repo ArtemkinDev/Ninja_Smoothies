@@ -17,33 +17,27 @@
 </template>
 
 <script>
+// eslint-disable-next-line
+import db from '@/firebase/init'
+
 export default {
     name: 'Index',
     data () {
         return {
-            smoothies: [
-                {
-                    title: 'Ninja Brew',
-                    slug: 'ninja-brew',
-                    ingredients: [
-                        'bannanas',
-                        'coffe',
-                        'milk'
-                    ],
-                    id: 1
-                },
-                {
-                    title: 'Morning Mood',
-                    slug: 'morning-mood',
-                    ingredients: [
-                        'mango',
-                        'lime',
-                        'juice'
-                    ],
-                    id: 2
-                }
-            ]
+            smoothies: []
         }
+    },
+    created () {
+        // fetch data
+        db.collection('smoothies').get()
+            .then(snapshot => {
+                snapshot.forEach(s => {
+                    console.log(s.data(), s.id)
+                    let smoothie = s.data()
+                    smoothie.id = s.id
+                    this.smoothies.push(smoothie)
+                })
+            })
     },
     methods: {
         deleteCard (id) {
