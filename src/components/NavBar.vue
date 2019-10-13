@@ -2,10 +2,10 @@
 <div class="navbar">
     <nav class="nav-extended indigo darken-2">
         <div class="nav-content">
-            <router-link to="">
+            <router-link :to="{ name: 'Index' }">
                 <span class="nav-title">Ninja Smoothies</span>
             </router-link>
-            <router-link to="" class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
+            <router-link :to="{ name: 'AddSmoothies' }" class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
                 <i class="material-icons">add</i>
             </router-link>
         </div>
