@@ -25,7 +25,7 @@
             <div class="field center-align">
                 <p v-if="errorMsg" class="red-text"> {{ errorMsg }} </p>
                 <button class="btn pink">Update Smoothie</button>
-                <button class="btn red" @click = "onReset()">Reset changes</button>
+                <button type="button" class="btn red" @click = "onReset()">Reset changes</button>
             </div>
         </form>
     </div>
@@ -34,6 +34,8 @@
 <script>
 import db from '@/firebase/init'
 import createClone from '@/common/helpers/createClone'
+import isEqual from '@/common/helpers/checkForEquality'
+import slugify from 'slugify'
 
 export default {
     name: 'EditSmoothie',
@@ -51,7 +53,35 @@ export default {
             this.smoothieSlug = this.$route.params.smoothie_slug
         },
         onSubmit () {
+            if (isEqual(this.smoothieClone, this.smoothie)) {
+                // eslint-disable-next-line
+                this.$router.push({ name: 'Index' }).catch(err => {})
+            }
 
+            if (!this.smoothieClone.title) {
+                this.errorMsg = 'You must enter a title!'
+            } else if (!this.smoothieClone.ingredients.length > 0) {
+                this.errorMsg = 'You must enter at least one value!'
+            } else {
+                this.errorMsg = ''
+                // create a slug
+                this.slug = slugify(this.smoothieClone.title, {
+                    replacement: '-',
+                    remove: /[$*_+~.()'"!\-:@]/g,
+                    lower: true
+                })
+
+                db.collection('smoothies').doc(this.smoothieClone.id).update({
+                    title: this.smoothieClone.title,
+                    ingredients: this.smoothieClone.ingredients,
+                    slug: this.smoothieClone.slug
+                }).then(() => {
+                    // eslint-disable-next-line
+                    this.$router.push({ name: 'Index' }).catch(err => {})
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         },
         addIngr () {
             if (this.another) {
